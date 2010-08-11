@@ -84,6 +84,9 @@ namespace TechTalk.SpecFlow.Generator.Configuration
                 case "mstest.silverlight":
                     GeneratorUnitTestProviderType = typeof(MsTestSilverlightGeneratorProvider);
                     break;
+                case "mstest.silverlight.async":
+                    GeneratorUnitTestProviderType = typeof(MsTestSilverlightAsyncGeneratorProvider);
+                    break;
                 default:
                     GeneratorUnitTestProviderType = null;
                     break;

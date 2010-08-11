@@ -17,4 +17,9 @@ namespace TechTalk.SpecFlow.Generator.UnitTestProvider
         void SetTestTearDown(CodeMemberMethod memberMethod);
         void SetIgnore(CodeTypeMember codeTypeMember);
     }
+
+    public interface IExtendedUnitTestGeneratorProvider
+    {
+        void SetScenarioSetup(CodeMemberMethod memberMethod);
+    }
 }
