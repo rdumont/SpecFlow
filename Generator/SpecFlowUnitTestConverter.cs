@@ -42,7 +42,7 @@ namespace TechTalk.SpecFlow.Generator
             this.codeDomHelper.InjectIfRequired(this.testGeneratorProvider);
             this.allowDebugGeneratedFiles = allowDebugGeneratedFiles;
         }
-
+        
         public CodeNamespace GenerateUnitTestFixture(Feature feature, string testClassName, string targetNamespace)
         {
             targetNamespace = targetNamespace ?? DEFAULT_NAMESPACE;
@@ -231,6 +231,11 @@ namespace TechTalk.SpecFlow.Generator
                     testRunnerField,
                     "OnScenarioStart",
                     new CodeVariableReferenceExpression("scenarioInfo")));
+
+            if (testGeneratorProvider is IExtendedUnitTestGeneratorProvider)
+            {
+                ((IExtendedUnitTestGeneratorProvider)testGeneratorProvider).SetScenarioSetup(setupMethod);
+            }
 
             return setupMethod;
         }
