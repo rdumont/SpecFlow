@@ -73,12 +73,4 @@ namespace TechTalk.SpecFlow
             testRunner.But(text, multilineTextArg, null);
         }
     }
-
-    public static class TestRunnerManager
-    {
-        public static ITestRunner GetTestRunner()
-        {
-            return ObjectContainer.EnsureTestRunner(Assembly.GetCallingAssembly());
-        }
-    }
 }
