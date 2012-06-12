@@ -20,6 +20,27 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests
         }
 
         [Test]
+        public void Should_create_instance_using_an_overridden_value_retriever()
+        {
+            // Arrange
+            var table = new Table("Field", "Value");
+            table.AddRow("BirthDate", "1980-12-12");
+            ScenarioContext.Current.ValueRetrievers.SetTypeHandler<DateTime?>(
+                (row, instanceType) =>
+                    {
+                        DateTime result;
+                        if(!DateTime.TryParse(row[1], out result)) return null;
+                        return result.AddYears(10);
+                    });
+
+            // Act
+            var person = table.CreateInstance<Person>();
+
+            // Assert
+            person.BirthDate.ShouldEqual(new DateTime(1990, 12, 12));
+        }
+
+        [Test]
         public void Should_create_instance_using_a_custom_value_retriever()
         {
             // Arrange
