@@ -19,6 +19,23 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests
         }
 
         [Test]
+        public void Should_create_instance_using_a_custom_value_retriever()
+        {
+            // Arrange
+            var table = new Table("Field", "Value");
+            table.AddRow("PhoneNumber", "+55 21 9999-9999");
+
+            // Act
+            var person = table.CreateInstance<CustomPerson>();
+
+            // Assert
+            person.PhoneNumber.ShouldNotBeNull();
+            person.PhoneNumber.CountryCode.ShouldEqual(55);
+            person.PhoneNumber.AreaCode.ShouldEqual(21);
+            person.PhoneNumber.Number.ShouldEqual("9999-9999");
+        }
+
+        [Test]
         public void Create_instance_will_return_an_instance_of_T()
         {
             var table = new Table("Field", "Value");
@@ -304,8 +321,5 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests
         {
             public Style ThisIsAStyle { get; set; }
         }
-
-
-
     }
 }
