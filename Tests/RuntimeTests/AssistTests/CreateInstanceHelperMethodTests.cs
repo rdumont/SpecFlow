@@ -25,6 +25,8 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests
             // Arrange
             var table = new Table("Field", "Value");
             table.AddRow("PhoneNumber", "+55 21 9999-9999");
+            ScenarioContext.Current.ValueRetrievers.SetTypeHandler<PhoneNumber>(
+                (row, instanceType) => PhoneNumber.Parse(row[1]));
 
             // Act
             var person = table.CreateInstance<CustomPerson>();

@@ -48,5 +48,10 @@ namespace TechTalk.SpecFlow
                     {typeof (Enum), (TableRow row, Type instanceType) => new EnumValueRetriever().GetValue(row[1], instanceType.GetProperties().First(x => x.Name.MatchesThisColumnName(row[0])).PropertyType)},
                 };
         }
+
+        public void SetTypeHandler<T>(Func<TableRow, Type, object> handler)
+        {
+            TypeHandlersForFieldValuePairs[typeof (T)] = handler;
+        }
     }
 }
