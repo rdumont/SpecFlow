@@ -8,6 +8,11 @@ namespace TechTalk.SpecFlow.Assist
 {
     internal static class TEHelpers
     {
+        internal static void InitializeScenarioContext()
+        {
+            ScenarioContext.Current = new ScenarioContext(null, null, null);
+        }
+
         internal static T CreateTheInstanceWithTheDefaultConstructor<T>(Table table)
         {
             var instance = (T)Activator.CreateInstance(typeof(T));
@@ -32,7 +37,7 @@ namespace TechTalk.SpecFlow.Assist
                                 where p.PropertyName == parameterName
                                 select p).FirstOrDefault();
                 if (property != null)
-                    parameterValues[parameterIndex] = property.Handler(property.Row);
+                    parameterValues[parameterIndex] = property.Handler(property.Row, typeof(T));
             }
             return (T)constructor.Invoke(parameterValues);
         }
@@ -74,12 +79,12 @@ namespace TechTalk.SpecFlow.Assist
             var propertiesThatNeedToBeSet = GetPropertiesThatNeedToBeSet<T>(table);
 
             propertiesThatNeedToBeSet.ToList()
-                .ForEach(x => instance.SetPropertyValue(x.PropertyName, x.Handler(x.Row)));
+                .ForEach(x => instance.SetPropertyValue(x.PropertyName, x.Handler(x.Row, typeof(T))));
         }
 
         internal static IEnumerable<PropertyHandler> GetPropertiesThatNeedToBeSet<T>(Table table)
         {
-            var handlers = GetTypeHandlersForFieldValuePairs<T>();
+            var handlers = ScenarioContext.Current.ValueRetrievers.TypeHandlersForFieldValuePairs;
 
             return from property in typeof (T).GetProperties()
                    from key in handlers.Keys
@@ -98,50 +103,11 @@ namespace TechTalk.SpecFlow.Assist
             return false;
         }
 
-        internal static Dictionary<Type, Func<TableRow, object>> GetTypeHandlersForFieldValuePairs<T>()
-        {
-            return new Dictionary<Type, Func<TableRow, object>>
-                       {
-                           {typeof (string), (TableRow row) => new StringValueRetriever().GetValue(row[1])},
-                           {typeof (byte), (TableRow row) => new ByteValueRetriever().GetValue(row[1])},
-                           {typeof (byte?), (TableRow row) => new NullableByteValueRetriever(v => new ByteValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (sbyte), (TableRow row) => new SByteValueRetriever().GetValue(row[1])},
-                           {typeof (sbyte?), (TableRow row) => new NullableSByteValueRetriever(v => new SByteValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (int), (TableRow row) => new IntValueRetriever().GetValue(row[1])},
-                           {typeof (int?), (TableRow row) => new NullableIntValueRetriever(v => new IntValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (uint), (TableRow row) => new UIntValueRetriever().GetValue(row[1])},
-                           {typeof (uint?), (TableRow row) => new NullableUIntValueRetriever(v => new UIntValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (short), (TableRow row) => new ShortValueRetriever().GetValue(row[1])},
-                           {typeof (short?), (TableRow row) => new NullableShortValueRetriever(v => new ShortValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (ushort), (TableRow row) => new UShortValueRetriever().GetValue(row[1])},
-                           {typeof (ushort?), (TableRow row) => new NullableUShortValueRetriever(v => new UShortValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (long), (TableRow row) => new LongValueRetriever().GetValue(row[1])},
-                           {typeof (long?), (TableRow row) => new NullableLongValueRetriever(v => new LongValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (ulong), (TableRow row) => new ULongValueRetriever().GetValue(row[1])},
-                           {typeof (ulong?), (TableRow row) => new NullableULongValueRetriever(v => new ULongValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (float), (TableRow row) => new FloatValueRetriever().GetValue(row[1])},
-                           {typeof (float?), (TableRow row) => new NullableFloatValueRetriever(v => new FloatValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (double), (TableRow row) => new DoubleValueRetriever().GetValue(row[1])},
-                           {typeof (double?), (TableRow row) => new NullableDoubleValueRetriever(v => new DoubleValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (decimal), (TableRow row) => new DecimalValueRetriever().GetValue(row[1])},
-                           {typeof (decimal?), (TableRow row) => new NullableDecimalValueRetriever(v => new DecimalValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (char), (TableRow row) => new CharValueRetriever().GetValue(row[1])},
-                           {typeof (char?), (TableRow row) => new NullableCharValueRetriever(v => new CharValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (bool), (TableRow row) => new BoolValueRetriever().GetValue(row[1])},
-                           {typeof (bool?), (TableRow row) => new NullableBoolValueRetriever(v => new BoolValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (DateTime), (TableRow row) => new DateTimeValueRetriever().GetValue(row[1])},
-                           {typeof (DateTime?), (TableRow row) => new NullableDateTimeValueRetriever(v => new DateTimeValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (Guid), (TableRow row) => new GuidValueRetriever().GetValue(row[1])},
-                           {typeof (Guid?), (TableRow row) => new NullableGuidValueRetriever(v => new GuidValueRetriever().GetValue(v)).GetValue(row[1])},
-                           {typeof (Enum), (TableRow row) => new EnumValueRetriever().GetValue(row[1], typeof (T).GetProperties().First(x => x.Name.MatchesThisColumnName(row[0])).PropertyType)},
-                       };
-        }
-
         internal class PropertyHandler
         {
             public TableRow Row { get; set; }
             public string PropertyName { get; set; }
-            public Func<TableRow, object> Handler { get; set; }
+            public Func<TableRow, Type, object> Handler { get; set; }
         }
 
         internal static Table GetTheProperInstanceTable<T>(Table table)

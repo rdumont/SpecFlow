@@ -30,6 +30,7 @@ namespace TechTalk.SpecFlow
         public ScenarioInfo ScenarioInfo { get; private set; }
         public ScenarioBlock CurrentScenarioBlock { get; internal set; }
         public Exception TestError { get; internal set; }
+        public ValueRetrieverCollection ValueRetrievers { get; private set; }
 
         internal TestStatus TestStatus { get; set; }
         internal List<string> PendingSteps { get; private set; }
@@ -53,6 +54,7 @@ namespace TechTalk.SpecFlow
             TestStatus = TestStatus.OK;
             PendingSteps = new List<string>();
             MissingSteps = new List<string>();
+            ValueRetrievers = new ValueRetrieverCollection();
         }
 
         public void Pending()

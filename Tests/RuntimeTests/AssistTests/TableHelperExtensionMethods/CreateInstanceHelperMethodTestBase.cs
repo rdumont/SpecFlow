@@ -3,6 +3,7 @@ using System.Globalization;
 using System.Threading;
 using NUnit.Framework;
 using Should;
+using TechTalk.SpecFlow.Assist;
 using TechTalk.SpecFlow.RuntimeTests.AssistTests.ExampleEntities;
 
 namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.TableHelperExtensionMethods
@@ -26,6 +27,7 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.TableHelperExtensionMethods
         public void SetUp()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            TEHelpers.InitializeScenarioContext();
         }
 
         [Test]

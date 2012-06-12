@@ -21,6 +21,7 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests
         public void SetUp()
         {
             Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
+            TEHelpers.InitializeScenarioContext();
 
             testInstance = new SetComparisonTestObject
                         {

@@ -19,6 +19,12 @@ namespace TechTalk.SpecFlow.RuntimeTests.AssistTests.SituationalTests
             public TestEnum? TestProperty { get; set; }
         }
 
+        [SetUp]
+        public void SetUp()
+        {
+            TEHelpers.InitializeScenarioContext();
+        }
+
         [Test]
         public void The_value_should_be_set_if_it_is_in_the_table()
         {
